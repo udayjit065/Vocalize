@@ -20,11 +20,13 @@ export default function Home() {
   const [isRecording, setIsRecording] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<any>(null); // Keeping any for the dynamic API result
   const [status, setStatus] = useState<"idle" | "listening" | "processing">("idle");
   
   const [mounted, setMounted] = useState(false);
   
+  // We use any here because the third-party MediaRecorder (IMediaRecorder) 
+  // has slight typing diffs from the native one during build-time.
   const mediaRecorderRef = useRef<any>(null);
   const chunksRef = useRef<BlobPart[]>([]);
   const librariesLoaded = useRef(false);
@@ -81,16 +83,16 @@ export default function Home() {
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
 
-      mediaRecorder.ondataavailable = (e: any) => {
+      mediaRecorderRef.current.ondataavailable = (e: any) => {
         if (e.data.size > 0) chunksRef.current.push(e.data);
       };
 
-      mediaRecorder.onstop = async () => {
+      mediaRecorderRef.current.onstop = async () => {
         const audioBlob = new Blob(chunksRef.current, { type: "audio/wav" });
         await analyzeAudio(audioBlob);
       };
 
-      mediaRecorder.start();
+      mediaRecorderRef.current.start();
       setIsRecording(true);
       setStatus("listening");
       setResult(null);
@@ -116,7 +118,8 @@ export default function Home() {
       const formData = new FormData();
       formData.append("file", audioBlob, "recording.wav");
 
-      const response = await fetch("http://localhost:8000/analyze", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const response = await fetch(`${apiUrl}/analyze`, {
         method: "POST",
         body: formData,
       });
