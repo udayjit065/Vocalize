@@ -76,3 +76,4 @@ The frontend is optimized for Vercel. Connect your Github repository and ensure 
 
 ### Backend
 Deploy the FastAPI backend to services like Heroku, Render, or Railway. Ensure the `GOOGLE_API_KEY` environment variable is set in your production environment.
+# Vocalize
