@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { MetricsCard } from "./components/MetricsCard";
 import { cn } from "../lib/utils";
+import { BASE_URL } from "../lib/api";
 
 export default function Home() {
   const [isRecording, setIsRecording] = useState(false);
@@ -118,8 +119,7 @@ export default function Home() {
       const formData = new FormData();
       formData.append("file", audioBlob, "recording.wav");
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-      const response = await fetch(`${apiUrl}/analyze`, {
+      const response = await fetch(`${BASE_URL}/analyze`, {
         method: "POST",
         body: formData,
       });
