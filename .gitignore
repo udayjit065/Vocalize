@@ -1,0 +1,48 @@
+# Virtual Environment
+aim-env/
+venv/
+env/
+.venv/
+
+# Google Cloud Credentials
+credentials/
+*.json
+!package.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Audio files (optional - uncomment if you don't want to commit audio)
+# *.wav
+# *.mp3
+# *.flac
+# *.m4a
+
+# Analysis results
+analysis_result.json
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment variables
+.env
+.env.local
