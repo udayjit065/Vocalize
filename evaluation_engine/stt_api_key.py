@@ -159,6 +159,69 @@ def analyze_audio_with_api_key(audio_file_path, api_key, language_code="en-US"):
     }
 
 
+from google.cloud import speech
+
+def analyze_audio_with_sdk(audio_file_path, credentials_info, language_code="en-US"):
+    """
+    Analyze audio using the official Google Cloud Speech SDK.
+    credentials_info: dict containing service account info
+    """
+    try:
+        client = speech.SpeechClient.from_service_account_info(credentials_info)
+        
+        with open(audio_file_path, "rb") as audio_file:
+            content = audio_file.read()
+
+        audio = speech.RecognitionAudio(content=content)
+        
+        if language_code == "auto":
+            config = speech.RecognitionConfig(
+                encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+                sample_rate_hertz=16000,
+                language_code="en-US",
+                alternative_language_codes=["pa-IN", "hi-IN"],
+                enable_word_time_offsets=True,
+                enable_automatic_punctuation=True,
+            )
+        else:
+            config = speech.RecognitionConfig(
+                encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+                sample_rate_hertz=16000,
+                language_code=language_code,
+                enable_word_time_offsets=True,
+                enable_automatic_punctuation=True,
+            )
+
+        response = client.recognize(config=config, audio=audio)
+
+        processed_words = []
+        full_transcript = ""
+
+        for result in response.results:
+            alternative = result.alternatives[0]
+            full_transcript += alternative.transcript + " "
+            
+            for word_info in alternative.words:
+                processed_words.append({
+                    "word": word_info.word,
+                    "startTime": word_info.start_time.total_seconds(),
+                    "endTime": word_info.end_time.total_seconds()
+                })
+
+        if not processed_words:
+            return {"error": "No transcription results returned"}
+
+        fluency_metrics = analyze_fluency(processed_words)
+
+        return {
+            "transcript": full_transcript.strip(),
+            "word_count": len(processed_words),
+            "words": processed_words,
+            "fluency_metrics": fluency_metrics
+        }
+    except Exception as e:
+        return {"error": f"SDK Speech recognition failed: {str(e)}"}
+
 # Demo with sample data (for testing without API call)
 if __name__ == "__main__":
     import json

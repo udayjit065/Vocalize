@@ -11,10 +11,12 @@ from dotenv import load_dotenv
 # Add parent directory to path to import evaluation_engine
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from evaluation_engine.stt_api_key import analyze_audio_with_api_key
+import json
+from evaluation_engine.stt_api_key import analyze_audio_with_api_key, analyze_audio_with_sdk
 
 load_dotenv()
 API_KEY = os.getenv("GOOGLE_API_KEY")
+GOOGLE_JSON = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
 
 app = FastAPI()
 
@@ -51,7 +53,18 @@ async def analyze_audio(file: UploadFile = File(...)):
         convert_to_google_format(upload_path, converted_path)
         
         # Analyze
-        result = analyze_audio_with_api_key(converted_path, API_KEY, "auto")
+        if GOOGLE_JSON:
+            try:
+                # Parse JSON string if it exists
+                creds = json.loads(GOOGLE_JSON)
+                result = analyze_audio_with_sdk(converted_path, creds, "auto")
+            except Exception as e:
+                print(f"SDK Error: {str(e)}")
+                # Fallback to API Key if SDK fails
+                result = analyze_audio_with_api_key(converted_path, API_KEY, "auto")
+        else:
+            result = analyze_audio_with_api_key(converted_path, API_KEY, "auto")
+            
         return result
         
     except Exception as e:
