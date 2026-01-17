@@ -14,7 +14,7 @@ import {
   CheckCircle2
 } from "lucide-react";
 import { MetricsCard } from "./components/MetricsCard";
-import { cn } from "@/lib/utils";
+import { cn } from "../lib/utils";
 
 export default function Home() {
   const [isRecording, setIsRecording] = useState(false);
