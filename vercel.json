@@ -2,11 +2,6 @@
   "version": 2,
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/main.py" },
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
-  ],
-  "functions": {
-    "api/**/*.py": {
-      "excludeFiles": "{__pycache__/**,**/*.pyc,**/tests/**,**/*_test.py,**/*.test.py}"
-    }
-  }
+    { "source": "/((?!api/).*)", "destination": "/frontend/$1" }
+  ]
 }
