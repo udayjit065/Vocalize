@@ -8,9 +8,7 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
-# Add parent directory to path to import evaluation_engine (for local development)
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-# Also add current directory for Docker deployment
+# Add current directory to path for imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 import json
@@ -20,7 +18,8 @@ load_dotenv()
 API_KEY = os.getenv("GOOGLE_API_KEY")
 GOOGLE_JSON = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
 
-app = FastAPI()
+# Create FastAPI app with /api as root path for Vercel
+app = FastAPI(root_path="/api")
 
 # Enable CORS for frontend
 app.add_middleware(
