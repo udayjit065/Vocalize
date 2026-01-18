@@ -42,9 +42,9 @@ from convert_audio import convert_to_google_format
 
 @app.post("/analyze")
 async def analyze_audio(file: UploadFile = File(...)):
-    # Save uploaded file
-    upload_path = f"temp_upload_{file.filename}"
-    converted_path = f"temp_converted_{file.filename}.wav"
+    # Use /tmp/ for Vercel serverless (only writable directory)
+    upload_path = f"/tmp/temp_upload_{file.filename}"
+    converted_path = f"/tmp/temp_converted_{file.filename}.wav"
     
     try:
         with open(upload_path, "wb") as buffer:
