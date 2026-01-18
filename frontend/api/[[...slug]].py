@@ -30,7 +30,7 @@ app.add_middleware(
 
 @app.get("/")
 def home():
-    return {"status": "Fluency Analysis API Running", "api_key_set": bool(API_KEY)}
+    return {"status": "Fluency Analysis API Running", "api_key_set": bool(API_KEY), "version": "1.1"}
 
 @app.get("/health")
 def health():
