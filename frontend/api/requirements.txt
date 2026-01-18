@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+google-cloud-speech
+python-multipart
+python-dotenv
+requests
