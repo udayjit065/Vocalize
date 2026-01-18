@@ -25,10 +25,7 @@ app = FastAPI()
 # Enable CORS for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "https://vocalize-demo.vercel.app"
-    ],
+    allow_origins=["*"],  # Allow all origins for now
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -37,6 +34,10 @@ app.add_middleware(
 @app.get("/")
 def home():
     return {"status": "Fluency Analysis API Running"}
+
+@app.get("/health")
+def health():
+    return {"status": "healthy"}
 
 from convert_audio import convert_to_google_format
 
