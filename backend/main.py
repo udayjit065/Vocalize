@@ -1,5 +1,6 @@
 """
 FastAPI Backend for TTS Fluency Analysis
+Deployed on Koyeb
 """
 import sys
 import os
@@ -11,19 +12,21 @@ from dotenv import load_dotenv
 # Add current directory to path for imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-import json
 from evaluation_engine.stt_api_key import analyze_audio_with_api_key
 
 load_dotenv()
 API_KEY = os.getenv("GOOGLE_API_KEY")
 
-# Create FastAPI app with /api as root path for Vercel
-app = FastAPI(root_path="/api")
+app = FastAPI()
 
-# Enable CORS for frontend
+# Enable CORS for Vercel frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for now
+    allow_origins=[
+        "http://localhost:3000",
+        "https://vocalize-demo.vercel.app",
+        "*"  # Allow all for now
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -31,7 +34,7 @@ app.add_middleware(
 
 @app.get("/")
 def home():
-    return {"status": "Fluency Analysis API Running"}
+    return {"status": "Fluency Analysis API Running on Koyeb"}
 
 @app.get("/health")
 def health():
@@ -41,7 +44,7 @@ from convert_audio import convert_to_google_format
 
 @app.post("/analyze")
 async def analyze_audio(file: UploadFile = File(...)):
-    # Use /tmp/ for Vercel serverless (only writable directory)
+    # Use /tmp/ for temp files
     upload_path = f"/tmp/temp_upload_{file.filename}"
     converted_path = f"/tmp/temp_converted_{file.filename}.wav"
     
@@ -50,10 +53,9 @@ async def analyze_audio(file: UploadFile = File(...)):
             shutil.copyfileobj(file.file, buffer)
             
         # Convert audio to Google-compatible format
-        # This fixes the 400 error by ensuring format is 16000Hz WAV
         convert_to_google_format(upload_path, converted_path)
         
-        # Analyze using API Key (same as local)
+        # Analyze using API Key
         result = analyze_audio_with_api_key(converted_path, API_KEY, "auto")
             
         return result
