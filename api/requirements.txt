@@ -2,5 +2,5 @@ fastapi
 uvicorn
 google-cloud-speech
 python-multipart
-scipy
-numpy
+python-dotenv
+requests
