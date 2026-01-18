@@ -8,8 +8,10 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
-# Add parent directory to path to import evaluation_engine
+# Add parent directory to path to import evaluation_engine (for local development)
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Also add current directory for Docker deployment
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 import json
 from evaluation_engine.stt_api_key import analyze_audio_with_api_key, analyze_audio_with_sdk
