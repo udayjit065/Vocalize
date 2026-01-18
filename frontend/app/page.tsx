@@ -75,12 +75,42 @@ export default function Home() {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const startRecording = async () => {
+  const startRecording = async (e?: React.MouseEvent) => {
+    // Prevent any default behavior (critical for mobile Safari)
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
     try {
-      const { MediaRecorder } = await import('extendable-media-recorder');
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       
-      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/wav' });
+      // Check for iOS/Safari MIME type support with fallback
+      let mimeType = 'audio/wav';
+      let useExtendedRecorder = true;
+      
+      // Check if we're on iOS and need mp4 fallback
+      if (typeof window !== 'undefined' && typeof MediaRecorder !== 'undefined') {
+        if (MediaRecorder.isTypeSupported('audio/mp4')) {
+          mimeType = 'audio/mp4';
+          useExtendedRecorder = false; // Use native MediaRecorder for mp4
+        } else if (MediaRecorder.isTypeSupported('audio/webm')) {
+          mimeType = 'audio/webm';
+          useExtendedRecorder = false;
+        }
+      }
+      
+      let mediaRecorder: any;
+      
+      if (useExtendedRecorder) {
+        // Use extended recorder for WAV support (desktop browsers)
+        const { MediaRecorder: ExtMediaRecorder } = await import('extendable-media-recorder');
+        mediaRecorder = new ExtMediaRecorder(stream, { mimeType: 'audio/wav' });
+      } else {
+        // Use native MediaRecorder for iOS/Safari
+        mediaRecorder = new MediaRecorder(stream, { mimeType });
+      }
+      
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
 
@@ -89,7 +119,7 @@ export default function Home() {
       };
 
       mediaRecorderRef.current.onstop = async () => {
-        const audioBlob = new Blob(chunksRef.current, { type: "audio/wav" });
+        const audioBlob = new Blob(chunksRef.current, { type: mimeType });
         await analyzeAudio(audioBlob);
       };
 
@@ -102,7 +132,13 @@ export default function Home() {
     }
   };
 
-  const stopRecording = () => {
+  const stopRecording = (e?: React.MouseEvent) => {
+    // CRITICAL: Prevent default FIRST to stop mobile Safari refresh
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
@@ -170,7 +206,8 @@ export default function Home() {
 
               <div className="flex flex-col items-center">
                 <button
-                  onClick={isRecording ? stopRecording : startRecording}
+                  type="button"
+                  onClick={(e) => isRecording ? stopRecording(e) : startRecording(e)}
                   disabled={analyzing}
                   className={cn(
                     "w-20 h-20 rounded-full flex items-center justify-center transition-all duration-300 border-2",
