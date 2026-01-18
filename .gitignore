@@ -8,6 +8,7 @@ env/
 credentials/
 *.json
 !package.json
+!vercel.json
 
 # Python
 __pycache__/
