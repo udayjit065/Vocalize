@@ -89,16 +89,21 @@ export default function Home() {
       let mimeType = 'audio/wav';
       let useExtendedRecorder = true;
       
-      // Check if we're on iOS and need mp4 fallback
-      if (typeof window !== 'undefined' && typeof MediaRecorder !== 'undefined') {
-        if (MediaRecorder.isTypeSupported('audio/mp4')) {
-          mimeType = 'audio/mp4';
-          useExtendedRecorder = false; // Use native MediaRecorder for mp4
-        } else if (MediaRecorder.isTypeSupported('audio/webm')) {
-          mimeType = 'audio/webm';
-          useExtendedRecorder = false;
-        }
-      }
+      // Only fallback to native recorder if we absolutely have to (e.g. mobile quirks)
+      // Ideally we WANT wav.
+      
+      // On strictly iOS, sometimes native is safer, but let's try to stick to WAV
+      // The previous logic was forcing WebM on Chrome because Chrome supports WebM
+      
+      /* 
+         Previous logic:
+         if (MediaRecorder.isTypeSupported('audio/webm')) -> use native WebM
+         
+         New Logic:
+         ALWAYS try to use ExtendedRecorder (WAV) first.
+         Only use native if initialization fails or if we are on a specific device that needs it.
+      */
+
       
       let mediaRecorder: any;
       
