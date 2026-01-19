@@ -59,6 +59,8 @@ Visit [http://localhost:3000](http://localhost:3000) to start analyzing.
 - `backend/`: FastAPI server for audio processing.
 - `evaluation_engine/`: Core logic for speech-to-text and fluency metrics.
 - `recordings/`: Temporary storage for processed audio.
+- `CODE_FLOW.md`: Detailed guide on code flow and architecture.
+- `DEPLOYMENT_HISTORY.md`: Troubleshooting log for deployment errors.
 
 ---
 

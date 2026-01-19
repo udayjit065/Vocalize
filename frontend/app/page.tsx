@@ -258,7 +258,7 @@ export default function Home() {
           <div className="lg:col-span-8 space-y-8">
             
             {/* Analytics Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <MetricsCard 
                 label="Fluency Score"
                 value={result?.fluency_metrics?.fluency_score || "0.0"}
@@ -271,6 +271,34 @@ export default function Home() {
                 unit="Words/Min"
                 loading={analyzing}
                 delay={0.1}
+              />
+              <MetricsCard 
+                label="Filler Rate"
+                value={result?.fluency_metrics ? Math.round(result.fluency_metrics.filler_rate * 100) : 0}
+                unit="%"
+                loading={analyzing}
+                delay={0.2}
+              />
+               <MetricsCard 
+                label="Long Pauses"
+                value={result?.fluency_metrics?.long_pauses || 0}
+                unit="Count"
+                loading={analyzing}
+                delay={0.3}
+              />
+              <MetricsCard 
+                label="Pause Freq"
+                value={result?.fluency_metrics?.pause_frequency || "0.0"}
+                unit="/ Word"
+                loading={analyzing}
+                delay={0.4}
+              />
+              <MetricsCard 
+                label="Avg Word Time"
+                value={result?.fluency_metrics?.avg_word_time || "0.0"}
+                unit="Seconds"
+                loading={analyzing}
+                delay={0.5}
               />
             </div>
 
